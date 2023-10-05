@@ -1,5 +1,6 @@
 package com.devsuperior.bds02.entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tb_city")
-public class City {
+public class City  implements Serializable {
+	public static final long serialVersionUID = 1L; // converter arquivo em bytes para transmitir em rede (boa prática)
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

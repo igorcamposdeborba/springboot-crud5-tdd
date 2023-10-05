@@ -1,5 +1,6 @@
 package com.devsuperior.bds02.entities;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
@@ -12,10 +13,11 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "tb_event")
-public class Event {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Event implements Serializable {
+	public static final long serialVersionUID = 1L; // converter arquivo em bytes para transmitir em rede (boa prática)
+	
+	@Id // identifica que este atributo é um id
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // incrementar ID no banco de dados
 	private Long id;
 	private String name;
 	private LocalDate date;
