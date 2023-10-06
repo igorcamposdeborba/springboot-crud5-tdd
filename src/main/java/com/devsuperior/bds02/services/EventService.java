@@ -1,10 +1,17 @@
 package com.devsuperior.bds02.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.devsuperior.bds02.dto.EventDTO;
 import com.devsuperior.bds02.entities.City;
@@ -21,18 +28,29 @@ public class EventService {
 	@Autowired
 	private CityRepository cityRepository;
 	
+	public List<EventDTO> findAll(){
+		List<Event> eventList = eventRepository.findAll(Sort.by("name")); // buscar no banco de dados e ordenar por nome
+		
+		// converter a lista de classe para DTO
+		List<EventDTO> eventDTOList = new ArrayList<EventDTO>();
+		for (Event i : eventList) {
+			eventDTOList.add(new EventDTO(i));
+		}
+		
+		return eventDTOList;
+	}
 	
-	@Transactional
+	@Transactional // Transaction permite rollback ao estado anterior se algo falhar entre o dto e o banco de dados
 	public EventDTO update(Long id, EventDTO eventDto) {
 		try {
 			Event eventEntity = eventRepository.getOne(id); // getOne instancia um objeto temporario e evita de acessar o banco
 			cotyDtoToEntity(eventDto, eventEntity); // deixar igual o banco de dados com o que está no DTO
 			eventEntity = eventRepository.save(eventEntity); // salvar no banco de dados
 			
-			return new EventDTO(eventEntity);
+			return new EventDTO(eventEntity); // sempre manipulo o dto e não a entity para separar camadas
 			
 		} catch (EntityNotFoundException e){
-			throw new ResourceNotFoundException("Id não encontrado: " + id);
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND); // exception 404 do ResponseEntity
 		}
 	}
 	

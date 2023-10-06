@@ -90,9 +90,9 @@ public class CityService {
 			return ResponseEntity.noContent().build();
 			
 		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.notFound().build();
+			return ResponseEntity.notFound().build(); // exception 404 do ResponseEntity
 		} catch (DataIntegrityViolationException e) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().build(); // exception 400 do ResponseEntity 
 		}
 	}
 }
