@@ -2,11 +2,15 @@ package com.devsuperior.bds02.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +19,10 @@ import org.springframework.data.domain.PageImpl;
 
 import com.devsuperior.bds02.dto.CityDTO;
 import com.devsuperior.bds02.entities.City;
+import com.devsuperior.bds02.exceptions.DatabaseException;
 import com.devsuperior.bds02.repositories.CityRepository;
+
+import javassist.NotFoundException;
 
 @Service // annotation registra que essa classe faz parte do sistema automatizado do spring. Spring gerencia a injeção de dependência
 public class CityService {
@@ -51,6 +58,19 @@ public class CityService {
 		return page;
 	}
 	
+	@Transactional
+	public ResponseEntity<CityDTO> findById(Long id){
+		Optional<City> city = repository.findById(id); // buscar no banco de dados e ordenar por nome
+		City cityEntity = city.orElse(null);
+		
+		if(Objects.isNull(cityEntity)) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                .body(new CityDTO());
+		}
+		
+		return ResponseEntity.ok(new CityDTO(cityEntity));
+	}
+	
 	
 	@Transactional
 	public CityDTO insert(CityDTO cityDTO) {
@@ -64,14 +84,15 @@ public class CityService {
 	}
 	
 	
-	public void delete(Long id) {
+	public ResponseEntity<Void> delete(Long id) {
 		try {
 			repository.deleteById(id); // deletar no banco de dados
+			return ResponseEntity.noContent().build();
 			
 		} catch (EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException("Id não encontrado: " + e);
+			return ResponseEntity.notFound().build();
 		} catch (DataIntegrityViolationException e) {
-			throw new ResourceNotFoundException("Violação de integridade do banco de dados");
+			return ResponseEntity.badRequest().build();
 		}
 	}
 }
