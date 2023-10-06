@@ -35,12 +35,4 @@ public class EventController {
 		return ResponseEntity.ok().body(eventDto);
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<EventDTO>> findAll(){
-		
-		List<EventDTO> eventList = eventService.findAll();
-		
-		return ResponseEntity.accepted().body(eventList);
-	}
-	
 }

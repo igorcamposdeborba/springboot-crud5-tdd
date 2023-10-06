@@ -40,21 +40,6 @@ public class CityService {
 		return cityDTOList;
 	}
 	
-	
-	@Transactional(readOnly = true) // transação sempre executa esta operação no banco de dados. ReadOnly true não trava o banco (boa prática em operações de leitura)
-	public Page<CityDTO> findAllPaged(Pageable pageable){
-		Page<City> cityList = repository.findAll(pageable); // buscar lista de cidades no banco de dados
-		
-		// converter por meio do DTO a lista de City
-		List<CityDTO> cityDto = new ArrayList<>();
-		for (City city : cityList) {
-			cityDto.add(new CityDTO(city));
-		}
-		Page<CityDTO> page = new PageImpl<>(cityDto); // converter a cityList em stream Page
-		
-		return page;
-	}
-	
 	@Transactional
 	public ResponseEntity<CityDTO> findById(Long id){
 		Optional<City> city = repository.findById(id); // buscar no banco de dados e ordenar por nome
