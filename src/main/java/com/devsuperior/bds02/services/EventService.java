@@ -2,6 +2,7 @@ package com.devsuperior.bds02.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -40,9 +41,12 @@ public class EventService {
 	}
 	
 	@Transactional // Transaction permite rollback ao estado anterior se algo falhar entre o dto e o banco de dados
-	public EventDTO update(Long id, EventDTO eventDto) {
+	public EventDTO update(Long id, EventDTO eventDto) throws EntityNotFoundException {
 		try {
-			Event eventEntity = eventRepository.getOne(id); // getOne instancia um objeto temporario e evita de acessar o banco
+			Event eventEntity = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException()); // getOne instancia um objeto temporario e evita de acessar o banco
+			if (Objects.isNull(eventEntity)) {
+				eventEntity = new Event();
+			}
 			cotyDtoToEntity(eventDto, eventEntity); // deixar igual o banco de dados com o que está no DTO
 			eventEntity = eventRepository.save(eventEntity); // salvar no banco de dados
 			
@@ -54,13 +58,14 @@ public class EventService {
 	}
 	
 	public void cotyDtoToEntity(EventDTO eventDto, Event eventEntity) {
-		eventEntity.setId(eventDto.getId());
 		eventEntity.setName(eventDto.getName());
 		eventEntity.setDate(eventDto.getDate());
 		eventEntity.setUrl(eventDto.getUrl());
-		
-		City city = cityRepository.getOne(eventDto.getCityId()); // instanciar categoria sem acessar o banco de dados
-		
+			
+		City city = cityRepository.getOne(eventEntity.getCity().getId()); // instanciar categoria sem acessar o banco de dados
+		eventDto.setCity(city);
+		eventDto.setId(eventEntity.getId());
+
 		eventEntity.setCity(city); // reatribuir city ao dto em execução baseado no que está no banco de dados
 		
 	}

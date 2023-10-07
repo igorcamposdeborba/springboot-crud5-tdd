@@ -34,6 +34,8 @@ public class EventDTO implements Serializable {
 		date = entity.getDate();
 		url = entity.getUrl();
 		cityId = entity.getCity().getId();
+		
+		this.city = entity.getCity();
 	}
 
 	public Long getId() {
@@ -78,5 +80,8 @@ public class EventDTO implements Serializable {
 
 	public void setCityId(Long cityId) {
 		this.cityId = cityId;
+	}
+	public void setCity(City city) {
+		this.city = city;
 	}
 }
