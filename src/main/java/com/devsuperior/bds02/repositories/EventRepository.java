@@ -12,6 +12,4 @@ import com.devsuperior.bds02.entities.Event;
 @Repository // permite injeção de dependência para implementar os métodos de acesso ao banco de dados
 public interface EventRepository extends JpaRepository<Event, Long>{
 
-	@Query("SELECT e FROM Event e WHERE e.name = :eventName")
-    Event findByName(@Param("eventName") String eventName);
 }

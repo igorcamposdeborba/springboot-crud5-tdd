@@ -3,6 +3,8 @@ package com.devsuperior.bds02.entities;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_city")
@@ -22,6 +26,7 @@ public class City  implements Serializable {
 	private Long id;
 	private String name;
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "city", fetch = FetchType.EAGER)
 	private List<Event> events = new ArrayList<>();
 	
@@ -51,5 +56,8 @@ public class City  implements Serializable {
 
 	public List<Event> getEvents() {
 		return events;
+	}
+	public void addEvent(Event event) {
+		this.events.add(event);
 	}
 }

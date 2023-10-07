@@ -44,11 +44,15 @@ public class EventService {
 	public EventDTO update(Long id, EventDTO eventDto) throws EntityNotFoundException {
 		try {
 			Event eventEntity = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException()); // getOne instancia um objeto temporario e evita de acessar o banco
-			if (Objects.isNull(eventEntity)) {
-				eventEntity = new Event();
-			}
-			cotyDtoToEntity(eventDto, eventEntity); // deixar igual o banco de dados com o que está no DTO
-			eventEntity = eventRepository.save(eventEntity); // salvar no banco de dados
+			City newCityEntity = cityRepository.findById(eventDto.getCityId()).orElse(null); // buscar id da cidade no banco de dados baseado no novo id que o usuário está passando pelo dto pelo atributo cityId
+
+			eventDto.setCity(newCityEntity); // mudar cidade do evento: atualizar id da cidade do evento
+			copyDtoToEntity(eventDto, eventEntity); // deixar igual o banco de dados com o que está no DTO
+			eventEntity = eventRepository.save(eventEntity); // salvar no banco de dados o evento
+			
+
+			newCityEntity.addEvent(eventEntity); // atualizar objeto cidade colocando o evento nela
+			cityRepository.save(newCityEntity); // atualizar no banco de dados a cidade colocando o evento nela
 			
 			return new EventDTO(eventEntity); // sempre manipulo o dto e não a entity para separar camadas
 			
@@ -57,10 +61,11 @@ public class EventService {
 		}
 	}
 	
-	public void cotyDtoToEntity(EventDTO eventDto, Event eventEntity) {
+	public void copyDtoToEntity(EventDTO eventDto, Event eventEntity) {
 		eventEntity.setName(eventDto.getName());
 		eventEntity.setDate(eventDto.getDate());
 		eventEntity.setUrl(eventDto.getUrl());
+		eventEntity.setCity(eventDto.getCity());
 			
 		City city = cityRepository.getOne(eventEntity.getCity().getId()); // instanciar categoria sem acessar o banco de dados
 		eventDto.setCity(city);

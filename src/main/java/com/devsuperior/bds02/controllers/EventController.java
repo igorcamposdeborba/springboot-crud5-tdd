@@ -3,11 +3,13 @@ package com.devsuperior.bds02.controllers;
 
 
 import java.net.URI;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +30,6 @@ public class EventController {
 	@PutMapping(value = "{id}")
 	public ResponseEntity<EventDTO> update(@PathVariable Long id, @RequestBody EventDTO eventDto) throws EntityNotFoundException {
 		EventDTO event = eventService.update(id, eventDto);
-		event.getCity().getEvents().size();
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(eventDto.getId()).toUri();
@@ -36,4 +37,11 @@ public class EventController {
 		return ResponseEntity.ok().body(eventDto);
 	}
 	
+	@GetMapping
+	public ResponseEntity<List<EventDTO>> findAll(){
+		
+		List<EventDTO> eventList = eventService.findAll();
+		
+		return ResponseEntity.ok().body(eventList);
+	}
 }
