@@ -29,7 +29,7 @@ public class EventService {
 	private CityRepository cityRepository;
 	
 	public List<EventDTO> findAll(){
-		List<Event> eventList = eventRepository.findAll(Sort.by("name")); // buscar no banco de dados e ordenar por nome
+		List<Event> eventList = eventRepository.findAll(Sort.by("date")); // buscar no banco de dados e ordenar por nome
 		
 		// converter a lista de classe para DTO
 		List<EventDTO> eventDTOList = new ArrayList<EventDTO>();
